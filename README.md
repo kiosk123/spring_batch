@@ -54,4 +54,5 @@ test {
 01. 스프링 배치란?  
 02. 스프링 배치 프로젝트 생성  
 03. 스프링 배치 기본 구조  
-04. Job, JobInstance, JobExecution, Step, StepExecution 이해  
+04. 스프링 배치 테이블의 이해  
+05. Job, JobInstance, JobExecution, Step, StepExecution 이해  
