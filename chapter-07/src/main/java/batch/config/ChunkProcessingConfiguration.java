@@ -38,7 +38,7 @@ public class  ChunkProcessingConfiguration {
     }
 
     @Bean
-    public Job sharedJob() {        
+    public Job chunkJob() {        
         return jobBuilderFactory.get("chunkJob")
                 .incrementer(new RunIdIncrementer())
                 .start(this.taskBaseStep())
@@ -47,6 +47,7 @@ public class  ChunkProcessingConfiguration {
     }
 
     /** chunk 스텝 */
+    @Bean
     public Step chunkBaseStep() {
         return stepBuilderFactory.get("chunkBaseStep")
                 /** 100개의 데이터가 있을 경우 chunk(10)으로 하면 chunk한 덩어리아 데이터를 10개씩 나눈다는 의미 */

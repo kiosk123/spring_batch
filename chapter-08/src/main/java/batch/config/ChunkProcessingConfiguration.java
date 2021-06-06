@@ -12,6 +12,7 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -20,9 +21,9 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,18 +41,19 @@ public class  ChunkProcessingConfiguration {
     }
 
     @Bean
-    public Job sharedJob() {        
+    public Job chunkJob() {        
         return jobBuilderFactory.get("chunkJob")
                 .incrementer(new RunIdIncrementer())
                 .start(this.taskBaseStep())
-                .start(this.chunkBaseStep())
+                .start(this.chunkBaseStep(null))
                 .build();
     }
 
-    /** chunk 스텝 */
-    public Step chunkBaseStep() {
+    @Bean
+    @JobScope
+    public Step chunkBaseStep(@Value("#{jobParameters[chunkSize]}") String chunkSize) {
         return stepBuilderFactory.get("chunkBaseStep")
-                /** 100개의 데이터가 있을 경우 chunk(10)으로 하면 chunk한 덩어리아 데이터를 10개씩 나눈다는 의미 */
+
                 .<String, String>chunk(10)
                 .reader(itemReader())
                 .processor(itemProcessor())

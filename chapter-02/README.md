@@ -116,7 +116,7 @@ public class  HelloConfiguration {
 
 ## 배치 실행시 파라미터로 특정 배치 Job만 실행하기
 
-프로그램 실행시 다음과 같이 배치 job이름을 넘긴다.
+프로그램 실행시 다음과 같이 배치 job이름을 program.arguments로 넘긴다.
 ` --spring.batch.job.names=helloJob` 
 
 ## 지정한 배치 Job만 실행하도록 application.yml 파일에 추가한다.
