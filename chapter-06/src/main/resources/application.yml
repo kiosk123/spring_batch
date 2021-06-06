@@ -1,0 +1,8 @@
+spring:
+  batch:
+    job:
+      names: ${job.name:sharedJob}
+    initialize-schema: always
+logging:
+  level:
+    batch: debug 
