@@ -3,8 +3,12 @@
 스프링 프레임워크에서 제공하는 배치 실습 정리
 
 ## 프로젝트 구성
-java 8+  
-spring boot 2.5+  
+java 11+  
+lombok
+spring boot batch 2.5+
+spring data jpa
+spring data jdbc
+mysql driver  
 h2 db
 gradle 6.5+
 
