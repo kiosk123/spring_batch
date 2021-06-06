@@ -4,8 +4,8 @@
   - Spring에서 지원하는 기술 적용 가능
   - DI, AOP, 서비스 추상화
 - 스프링 배치 실행 단위 
-  - Job
-  - Step
+  - Job: 하나 이상의 Step으로 이뤄짐
+  - Step: Job의 실행 단위
 - 작업 단위
   - 간단한 작업 단위 - Tasklet
   - 대량 묶음 단위 - Chunk

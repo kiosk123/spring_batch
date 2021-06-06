@@ -7,7 +7,7 @@
  * in the user manual at https://docs.gradle.org/6.5.1/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'spring-security'
+rootProject.name = 'spring_batch'
 
 include 'chapter-02'
 include 'chapter-03'
