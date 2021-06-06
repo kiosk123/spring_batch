@@ -124,14 +124,19 @@ public class  HelloConfiguration {
 스프링 배치는 기본적으로 모든 특정 배치 Job만 실행하도록 설정하지 않으면 모든 배치 Job을 실행하는 것이 기본이다.  
 특정 배치 Job만을 실행하기 위해 다음과 같이 yml파일에 설정해준다. 
 
-`spring.batch.job.names: ${job.name:NONE}` 
-- 배치 실행시 job.name 파라미터에 아무것도 넘어오는 게 없으면 NONE으로 세팅된다
-  - NONE으로 세팅시 아무런 배치도 실행하지 않는다.
+`spring.batch.job.names: ${job.name:NONE}`
 
 ```yml
 spring:
   batch:
     job:
-      names: ${job.name:helloJob}
+      names: ${job.name:NONE}
 ```
+
+- 배치 실행시 job.name 파라미터에 아무것도 넘어오는 게 없으면 NONE으로 세팅된다
+  - NONE으로 세팅시 아무런 배치도 실행하지 않는다.
+
+- 배치 실행시 `--job.name=helloJob` 형태로 실행시킬 배치 job을 넘기면 된다.
+
+
 
