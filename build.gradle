@@ -1,0 +1,46 @@
+buildscript {
+	repositories {
+		jcenter()
+		mavenCentral()
+	}
+	dependencies {
+	
+	}
+}
+
+allprojects {
+
+}
+
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+	apply plugin: 'application'
+
+	sourceCompatibility = "11"
+	targetCompatibility = "11"
+
+	[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+	task initSourceFolders {
+		sourceSets*.java.srcDirs*.each {
+			if( !it.exists() ) {
+				it.mkdirs()
+			}
+		}
+	 
+		sourceSets*.resources.srcDirs*.each {
+			if( !it.exists() ) {
+				it.mkdirs()
+			}
+		}
+	}
+	
+	repositories {
+		mavenCentral()
+	}
+
+	dependencies {
+
+	}
+}
