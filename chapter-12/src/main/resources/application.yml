@@ -3,6 +3,10 @@ spring:
     job:
       names: ${job.name:chunkJob}
     initialize-schema: always
+  datasource:
+    driver-class-name: org.h2.Driver
+    data:
+    - classpath:person.sql
 logging:
   level:
     batch: debug 
