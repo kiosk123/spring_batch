@@ -1,18 +1,3 @@
-# 스프링 배치 연습
-
-스프링 프레임워크에서 제공하는 배치 실습 정리
-
-## 프로젝트 구성
-java 11+  
-lombok  
-spring boot batch 2.4+  
-spring data jpa  
-spring data jdbc  
-mysql driver  
-h2 db  
-gradle 6.5+  
-
-```gradle
 plugins {
 	id 'org.springframework.boot' version '2.4.0'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
@@ -48,14 +33,3 @@ dependencies {
 test {
 	useJUnitPlatform()
 }
-```
-
-## 챕터
-01. 스프링 배치란?  
-02. 스프링 배치 프로젝트 생성  
-03. 스프링 배치 기본 구조  
-04. 스프링 배치 테이블의 이해  
-05. Job, JobInstance, JobExecution, Step, StepExecution 이해  
-06. ExecutionContext 이해
-07. Task 기반 배치와 Chunk 기반 배치 차이점
-08. JobParameter의 이해
