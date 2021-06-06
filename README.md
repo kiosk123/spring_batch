@@ -5,7 +5,7 @@
 ## 프로젝트 구성
 java 8+  
 spring boot 2.5+  
-oracle 12c 
+h2 db
 gradle 6.5+
 
 ## 챕터별 설명
