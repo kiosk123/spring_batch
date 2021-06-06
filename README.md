@@ -56,7 +56,11 @@ test {
 03. 스프링 배치 기본 구조  
 04. 스프링 배치 테이블의 이해  
 05. Job, JobInstance, JobExecution, Step, StepExecution 이해  
-06. ExecutionContext 이해
-07. Task 기반 배치와 Chunk 기반 배치 차이점
-08. JobParameter의 이해
-09. @JobScope와 @StepScope 이해
+06. ExecutionContext 이해  
+07. Task 기반 배치와 Chunk 기반 배치 차이점  
+08. JobParameter의 이해  
+09. @JobScope와 @StepScope 이해  
+10. ItemReader의 이해  
+11. CSV 파일 읽기  
+12. JDBC 데이터 읽기  
+
