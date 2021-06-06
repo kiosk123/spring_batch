@@ -38,8 +38,9 @@ public class  SharedConfiguration {
     public Job sharedJob() {        
         return jobBuilderFactory.get("sharedJob")
                 .incrementer(new RunIdIncrementer())
+                /** start -> next -> next 순으로 job의 step 실행 */
                 .start(this.sharedStep())
-                .next(this.sharedStep2())
+                .next(this.sharedStep2()) 
                 .build();
     }
 
