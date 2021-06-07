@@ -1,0 +1,8 @@
+spring:
+  batch:
+    job:
+      names: ${job.name:chunkJob}
+    initialize-schema: always
+logging:
+  level:
+    batch: debug 
