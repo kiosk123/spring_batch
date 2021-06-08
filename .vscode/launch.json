@@ -1,0 +1,91 @@
+{
+    // IntelliSense를 사용하여 가능한 특성에 대해 알아보세요.
+    // 기존 특성에 대한 설명을 보려면 가리킵니다.
+    // 자세한 내용을 보려면 https://go.microsoft.com/fwlink/?linkid=830387을(를) 방문하세요.
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-02"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication(1)",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-04"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication(2)",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-06"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication(3)",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-07"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication(4)",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-08"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication(5)",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-09"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication(6)",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-10"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication(7)",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-11"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication(8)",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-12"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication(9)",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-13"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication(10)",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-15"
+        }
+    ]
+}
