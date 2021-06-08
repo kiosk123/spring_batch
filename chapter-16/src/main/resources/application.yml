@@ -1,0 +1,14 @@
+spring:
+  batch:
+    job:
+      names: ${job.name:jdbcJob}
+    initialize-schema: always
+  datasource:
+    hikari:
+      jdbc-url: jdbc:h2:tcp://localhost/~/batch
+      username: sa
+      password: 
+      driver-class-name: org.h2.Driver
+logging:
+  level:
+    batch: debug 
