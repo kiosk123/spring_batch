@@ -1,7 +1,23 @@
 # 04. 스프링 배치 테이블의 이해
   
 ![4.png](./img/4.png)
-![5.png](./img/5.png)
+![5.png](./img/5.png)  
+다음의 예제에서는 새로운 Job인지 기존의 Job을 재실행하는 것인지에 대해 구분되는 JobParameter가 없었지만  
+새로 실행되는 이유는 다음과 같다.
+```java
+@Bean
+public Job helloJob() {
+			/** Job 이름은 helloJob으로 설정함 - Job이름은 스프링 배치를 실행시킬 수 있는 key이기도 함*/
+	return jobBuilderFactory.get("helloJob")
+			/** incrementer - Job 실행 단위 구분 RunIdIncrementer클래스는 새로운 Job 인스턴스를 만들도록 돕는다 */
+			.incrementer(new RunIdIncrementer()) /**RunIdIncrementer는 Job이 실행할때마다 파라미터 아이디를 자동으로 생성 */
+
+			/** Job 실행시 최초로 실행될 스텝을 설정한다.*/
+			.start(this.helloStep())
+			.build();
+}
+```
+
 ![6.png](./img/6.png)
 
 

@@ -31,7 +31,7 @@ public class  HelloConfiguration {
     public Job helloJob() {
                 /** Job 이름은 helloJob으로 설정함 - Job이름은 스프링 배치를 실행시킬 수 있는 key이기도 함*/
         return jobBuilderFactory.get("helloJob")
-                /** incrementer - Job 실행 단위 구분 */
+                /** incrementer - Job 실행 단위 구분 RunIdIncrementer클래스는 새로운 Job 인스턴스를 만들도록 돕는다 */
                 .incrementer(new RunIdIncrementer()) /**RunIdIncrementer는 Job이 실행할때마다 파라미터 아이디를 자동으로 생성 */
 
                 /** Job 실행시 최초로 실행될 스텝을 설정한다.*/
