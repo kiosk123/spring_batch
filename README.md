@@ -63,13 +63,16 @@ test {
 10. ItemReader의 이해  
 11. CSV 파일 읽기  
 12. JDBC 데이터 읽기  
-13. JPA 데이터 읽기
-14. ItemWriter interface 구조 이해
-15. CSV 파일 쓰기
-16. JDBC 데이터 쓰기 
-17. JPA 데이터 쓰기
-18. ItemProcessor Interface 구조 이해
-19. CSV 파일 데이터를 읽어 H2 DB에 저장하는 배치 개발 - 내가한 것
-20. CSV 파일 데이터를 읽어 H2 DB에 저장하는 배치 개발 - 강사님이 한 것
-21. 테스트 코드 작성하기
+13. JPA 데이터 읽기  
+14. ItemWriter interface 구조 이해  
+15. CSV 파일 쓰기  
+16. JDBC 데이터 쓰기  
+17. JPA 데이터 쓰기  
+18. ItemProcessor Interface 구조 이해  
+19. CSV 파일 데이터를 읽어 H2 DB에 저장하는 배치 개발 - 내가한 것  
+20. CSV 파일 데이터를 읽어 H2 DB에 저장하는 배치 개발 - 강사님이 한 것  
+21. 테스트 코드 작성하기  
+22. 스프링 배치에서 전처리 후처리를 위한 JobExecutionListener, StepExecutionListener 이해  
+23. StepListener의 이해  
+24. Skip 예외 처리
 
