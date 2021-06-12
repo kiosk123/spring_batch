@@ -9,6 +9,13 @@
             "name": "Launch BatchApplication",
             "request": "launch",
             "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-20"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
             "projectName": "chapter-18"
         },
         {
@@ -107,6 +114,14 @@
             "request": "launch",
             "mainClass": "batch.BatchApplication",
             "projectName": "chapter-15"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication(10)",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-19",
+            "args": "allow_duplicate=false"
         }
     ]
 }

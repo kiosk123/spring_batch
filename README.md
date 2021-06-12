@@ -69,4 +69,6 @@ test {
 16. JDBC 데이터 쓰기 
 17. JPA 데이터 쓰기
 18. ItemProcessor Interface 구조 이해
+19. CSV 파일 데이터를 읽어 H2 DB에 저장하는 배치 개발 - 내가한 것
+20. CSV 파일 데이터를 읽어 H2 DB에 저장하는 배치 개발 - 강사님이 한 것
 

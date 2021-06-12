@@ -1,0 +1,23 @@
+spring:
+  batch:
+    job:
+      names: ${job.name:csvToH2BatchJob}
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/batch
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  jpa:
+    # generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.H2Dialect
+        default_batch_fetch_size: 100
+logging:
+  level:
+    batch: debug 
