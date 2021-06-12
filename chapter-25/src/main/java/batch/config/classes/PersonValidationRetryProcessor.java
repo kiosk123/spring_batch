@@ -1,10 +1,17 @@
 package batch.config.classes;
 
+
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.retry.RetryCallback;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.RetryListener;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.retry.support.RetryTemplateBuilder;
 import org.springframework.util.StringUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class PersonValidationRetryProcessor implements ItemProcessor<Person, Person> {
     
     private final RetryTemplate retryTemplate;
@@ -17,6 +24,9 @@ public class PersonValidationRetryProcessor implements ItemProcessor<Person, Per
 
                         /** NotFoundNameException 발생시 재시도 함 */
                         .retryOn(NotFoundNameException.class)
+
+                        /** RetryListener 등록 */
+                        .withListener(new SaverPersonRetryListener())
                         .build();
 	}
 
@@ -36,4 +46,30 @@ public class PersonValidationRetryProcessor implements ItemProcessor<Person, Per
             return item;
         });
 	}
+
+    public static class SaverPersonRetryListener implements RetryListener {
+
+        /** Retry를 시작하는 설정 - true어야 retry 적용 */
+		@Override
+		public <T, E extends Throwable> boolean open(RetryContext context, RetryCallback<T, E> callback) {
+			return true;
+		}
+
+        /** Retry가 종료 후 호출 */
+		@Override
+		public <T, E extends Throwable> void close(RetryContext context, RetryCallback<T, E> callback,
+				Throwable throwable) {
+			log.info("close");
+			
+		}
+
+        /** RetryTemplate에서 정의한 예외가 던져졌을 때 발생 */
+		@Override
+		public <T, E extends Throwable> void onError(RetryContext context, RetryCallback<T, E> callback,
+				Throwable throwable) {
+			log.info("onError");
+			
+		}
+        
+    }
 }
