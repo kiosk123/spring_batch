@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
 import batch.config.classes.DuplicateValidationProcessor;
 import batch.config.classes.NotFoundNameException;
 import batch.config.classes.Person;
+import batch.config.classes.PersonValidationRetryProcessor;
 import batch.config.classes.SavePersonListener;
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,15 +67,12 @@ public class SavePersonConfiguration {
                 .processor(itemProcessor(allowDuplicate))
                 .writer(JpaItemWriter())
                 .listener(new SavePersonListener.SavepersonStepExecutionListener())
-
-                /** SkipListener는 faultTolerant 호출 후 등록해야 동작함 */
                 .faultTolerant()
-
-                /** NotFoundNameException 발생을 */
                 .skip(NotFoundNameException.class)
-
-                /** 3번까지 허용한다. */
                 .skipLimit(3)
+                /** retry 또한 faultTolerant를 호출한 다음에 설정해야한다. */
+                .retry(NotFoundNameException.class)
+                .retryLimit(3)
                 .build();
     }
 
@@ -93,7 +91,7 @@ public class SavePersonConfiguration {
         /** ItemProcessor가 여러개일 경우 묶는 역할을 한다. */
         CompositeItemProcessor<Person, Person> itemProcessor = new CompositeItemProcessorBuilder<Person, Person>()
                 /** 등록한 순으로 ItemProcessor 실행 */
-                .delegates(validationProcessor, duplicateValidationProcessor)
+                .delegates(new PersonValidationRetryProcessor(), validationProcessor, duplicateValidationProcessor)
                 .build();
 
         itemProcessor.afterPropertiesSet();
