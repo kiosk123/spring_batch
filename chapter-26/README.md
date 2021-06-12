@@ -248,3 +248,52 @@ public class UserConfiguration {
 }
 
 ```
+
+## JobExecutionListener로 등급 상향된 유저의 로그와 실행시간 측정
+
+```java
+
+@Slf4j
+public class LevelUpJobExecutionListener implements JobExecutionListener {
+
+    private final UserRepository userRepository;
+
+    
+	public LevelUpJobExecutionListener(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
+
+
+	@Override
+	public void beforeJob(JobExecution jobExecution) {
+		
+		
+	}
+
+	
+	@Override
+	public void afterJob(JobExecution jobExecution) {
+		Collection<User> users = userRepository.findAllByUpdatedDate(LocalDate.now());
+        long time = jobExecution.getEndTime().getTime() - jobExecution.getStartTime().getTime();
+        log.info("회원 등급 업데이트 배치 프로그램");
+        log.info("---------------------------------");
+        log.info("총 데이터 처리 {}건, 처리 시간 {}millis", users.size(), time);
+	}
+    
+}
+```
+
+```java
+@Slf4j
+public class UserConfiguration {
+    //... 생략
+    @Bean
+    public Job userJob() throws Exception {
+        return this.jobBuilderFactory.get("userJob")
+                .incrementer(new RunIdIncrementer())
+                .start(this.saveUserStep())
+                .next(this.userLevelUpStep())
+                .listener(new LevelUpJobExecutionListener(userRepository))
+                .build();
+    }
+```

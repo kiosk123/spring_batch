@@ -16,6 +16,7 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import batch.config.classes.LevelUpJobExecutionListener;
 import batch.config.classes.SaveUserTasklet;
 import batch.config.classes.User;
 import batch.config.classes.UserRepository;
@@ -45,6 +46,7 @@ public class UserConfiguration {
                 .incrementer(new RunIdIncrementer())
                 .start(this.saveUserStep())
                 .next(this.userLevelUpStep())
+                .listener(new LevelUpJobExecutionListener(userRepository))
                 .build();
     }
 
