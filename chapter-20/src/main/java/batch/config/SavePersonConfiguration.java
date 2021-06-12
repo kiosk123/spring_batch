@@ -7,10 +7,11 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JpaItemWriter;
+import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
@@ -54,7 +55,7 @@ public class SavePersonConfiguration {
                 .<Person, Person>chunk(10)
                 .reader(itemReader())
                 .processor(new DuplicateValidationProcessor<Person>(person -> person.getName(), allowDuplicate))
-                .writer(itemWriter())
+                .writer(JpaItemWriter())
                 .build();
     }
 
@@ -91,7 +92,20 @@ public class SavePersonConfiguration {
         return itemReader;
     }
 
-    private ItemWriter<? super Person> itemWriter() {
-        return items -> items.forEach(item -> log.info("저는 {} 입니다.", item.getName()));
+    /** JpaItemWriter 생성 */
+    private ItemWriter<Person> JpaItemWriter() throws Exception {
+        JpaItemWriter<Person> item = new JpaItemWriterBuilder<Person>()
+                .entityManagerFactory(entityManagerFactory)
+                /** 
+                 * @Id로 설정된 프로퍼티 값을 직접 설정 할때 
+                 * 별다른 설정 없이 실행할 경우 entityManager의 merge 메서드를 호출
+                 * @Id로 설정된 값이 이미 디비에 있는지 비교하고 없으면 insert 있으면 update 하기 때문에
+                 * 단순 insert인 경우 select 쿼리를 하게 되므로 실제 쿼리 요청은 2배
+                 * 이때 usePersist(true)를 설정하면 select쿼리 없이 insert한다 
+                 */
+                .usePersist(false)
+                .build();
+        item.afterPropertiesSet();
+        return item;
     }
 }
