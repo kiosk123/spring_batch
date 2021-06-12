@@ -9,6 +9,13 @@
             "name": "Launch BatchApplication",
             "request": "launch",
             "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-18"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
             "projectName": "chapter-17"
         },
         {
