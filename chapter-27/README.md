@@ -224,3 +224,74 @@ public class UserConfiguration {
     }
 }
 ```
+
+## JobExecutionDecider로 주문 금액 집계 Step 실행 여부 결정
+date 파라미터가 있으면 Step을 실행하고 없으면 실행하지 않는 것을 처리한다
+
+```java
+public class JobParametersDecide implements JobExecutionDecider {
+
+    /** Status를 커스텀하게 재정의 */
+    public static final FlowExecutionStatus CONTINUE = new FlowExecutionStatus("CONTINUE");
+
+    /** jobParameters key에 대한 값이 있는 지 없는 지 판단 */
+    private final String key;
+
+	public JobParametersDecide(String key) {
+		this.key = key;
+	}
+
+	@Override
+	public FlowExecutionStatus decide(JobExecution jobExecution, StepExecution stepExecution) {
+		String value = jobExecution.getJobParameters().getString(key);
+
+        if (!StringUtils.hasText(value)) {
+            return FlowExecutionStatus.COMPLETED;
+        }
+		return CONTINUE;
+	}
+    
+}
+```
+
+```java
+public class UserConfiguration {
+    private final JobBuilderFactory jobBuilderFactory;
+    private final StepBuilderFactory stepBuilderFactory;
+    private final UserRepository userRepository;
+    private final EntityManagerFactory entityManagerFactory;
+    private final DataSource dataSource;
+
+    public UserConfiguration(JobBuilderFactory jobBuilderFactory,
+                              StepBuilderFactory stepBuilderFactory,
+                              UserRepository userRepository,
+                              EntityManagerFactory entityManagerFactory,
+                              DataSource dataSource) {
+        this.jobBuilderFactory = jobBuilderFactory;
+        this.stepBuilderFactory = stepBuilderFactory;
+        this.userRepository = userRepository;
+        this.entityManagerFactory = entityManagerFactory;
+        this.dataSource = dataSource;
+    }
+
+    @Bean
+    public Job userJob() throws Exception {
+        return this.jobBuilderFactory.get("userJob")
+                .incrementer(new RunIdIncrementer())
+                .start(this.saveUserStep())
+                .next(this.userLevelUpStep())
+                .listener(new LevelUpJobExecutionListener(userRepository))
+
+                /** 다음 스템 실행전에 jobParameter date key값이 있는 지 조사 */
+                .next(new JobParametersDecide("date"))
+
+                /** JobParametersDecide에서 나온 결과값이 CONTINUE라면 */
+                .on(JobParametersDecide.CONTINUE.getName())
+
+                /** orderStatisticsStep */
+                .to(this.orderStatisticsStep(null))
+                .build()
+                .build();
+    }
+```
+

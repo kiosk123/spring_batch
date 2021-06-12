@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
+import batch.config.classes.JobParametersDecide;
 import batch.config.classes.LevelUpJobExecutionListener;
 import batch.config.classes.OrderStatistics;
 import batch.config.classes.SaveUserTasklet;
@@ -67,14 +68,23 @@ public class UserConfiguration {
                 .incrementer(new RunIdIncrementer())
                 .start(this.saveUserStep())
                 .next(this.userLevelUpStep())
-                .next(this.orderStatisticsStep(null))
                 .listener(new LevelUpJobExecutionListener(userRepository))
+
+                /** 다음 스템 실행전에 jobParameter date key값이 있는 지 조사 */
+                .next(new JobParametersDecide("date"))
+
+                /** JobParametersDecide에서 나온 결과값이 CONTINUE라면 */
+                .on(JobParametersDecide.CONTINUE.getName())
+
+                /** orderStatisticsStep */
+                .to(this.orderStatisticsStep(null))
+                .build()
                 .build();
     }
 
     @Bean
     @JobScope
-    public Step orderStatisticsStep(@Value("#{jobParameters[date]?: '2020-11'}") String date) throws Exception  {
+    public Step orderStatisticsStep(@Value("#{jobParameters[date]}") String date) throws Exception  {
         log.debug("<<<<<<<<<<<<<<<< date : {} >>>>>>>>>>>>>>>>>" , date);
         return this.stepBuilderFactory.get("orderStatisticsStep")
                 .<OrderStatistics, OrderStatistics>chunk(100)
