@@ -1,6 +1,7 @@
 # 스프링 배치 연습
 
-스프링 프레임워크에서 제공하는 배치 실습 정리
+스프링 프레임워크에서 제공하는 배치 실습 정리  
+[Spring Batch Event Listeners Example](https://howtodoinjava.com/spring-batch/spring-batch-event-listeners/#skip)
 
 ## 프로젝트 구성
 java 11+  
@@ -74,5 +75,6 @@ test {
 21. 테스트 코드 작성하기  
 22. 스프링 배치에서 전처리 후처리를 위한 JobExecutionListener, StepExecutionListener 이해  
 23. StepListener의 이해  
-24. Skip 예외 처리
+24. Skip 예외 처리  
+25. Retry 예외 처리  
 

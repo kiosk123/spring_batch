@@ -7,6 +7,7 @@ Skip은 Step에서 발생한 특정 예외 처리를 위한 설정이다.
 Skip은 특정 예외를 설정해 해당 예외를 N번까지 허용하겠다는 설정하겠다는 설정이 가능하다.  
 N번을 초과하는 Step은 실패처리된다.  
 
+
 ## 예제 코드  
 ```java
     @Bean
@@ -21,6 +22,9 @@ N번을 초과하는 Step은 실패처리된다.
 
                 /** SkipListener는 faultTolerant 호출 후 등록해야 동작함 */
                 .faultTolerant()
+
+                /** SkipListener는 faultTolerant 호출 후 등록해야 동작함*/
+                //.listner(new SkipListener())
 
                 /** NotFoundNameException 발생을 */
                 .skip(NotFoundNameException.class)
