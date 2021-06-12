@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import org.springframework.batch.item.ItemProcessor;
 
+
 public class DuplicateValidationProcessor<T> implements ItemProcessor<T, T>{
 
     private final Map<String, Object> keyPool = new ConcurrentHashMap<>();
@@ -26,6 +27,7 @@ public class DuplicateValidationProcessor<T> implements ItemProcessor<T, T>{
         if (keyPool.containsKey(key)) {
             return null;
         }
+
         keyPool.put(key, key);
 		return item;
 	}

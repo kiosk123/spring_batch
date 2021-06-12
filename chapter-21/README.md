@@ -14,3 +14,102 @@ spring.factories 내부에 여러 Configuration 들이 있고, 조건에 따라 
 spring.factories 안에 들어있는 수많은 자동 설정들이 조건에 따라 적용이 되어 수 많은 Bean들이 생성되고,  
 스프링 부트 어플리케이션이 실행되는 것이다
 
+**@SpringBatchTest** 가 테스트 코드에서 필요한 경우가 있는데 @JobScope와 @StepScope로 설정된 부분을 동작하게 하기 위해서다  
+이것을 설정안하고 실행하면`org.springframework.beans.factory.support.ScopeNotActiveException`를 확인할 수 있다.
+
+
+## 예제코드
+
+@TestConfiguration
+```java
+@Configuration
+@EnableBatchProcessing
+@EnableAutoConfiguration
+public class TestConfiguration {
+    
+    @Bean
+    public JobLauncherTestUtils jobLauncherTestUtils() {
+        return new JobLauncherTestUtils();
+    }
+}
+```
+
+@SavePersonConfigurationTest
+```java
+@SpringBatchTest /** @JobScope나 @StepScope로 설정된 부분이 올바르게 동작하기 위해 필요 */
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {SavePersonConfiguration.class, TestConfiguration.class})
+public class SavePersonConfigurationTest {
+    
+    @Autowired
+    private JobLauncherTestUtils jobLauncherTestUtils;
+
+    @Autowired
+    private PersonRepository personRepository;
+
+    /** 영속성 컨텍스트의 데이터를 공유하는 것을 방지하기 위함 */
+    @After
+    public void tearDown() throws Exception {
+        personRepository.deleteAll();
+    }
+
+    /** Step에서 Write된 총 데이터 갯수 검증 */
+    @Test
+    public void test_allow_duplicate() throws Exception {
+        //given
+        /** 테스트 job parameter 생성 */
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("allow_duplicate", "true")
+                .toJobParameters();
+        //when
+        /** jobLauncherTestUtils를 이용한 Job 실행  */
+        JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
+
+        //then
+        /** N개의 StepExecution을 모두 가져와서 StepExcution에 의해 Write된 총 갯수를 검증  */
+        int writeCount = jobExecution.getStepExecutions().stream().mapToInt(StepExecution::getWriteCount).sum();
+        assertEquals(100, writeCount);
+
+        /** DB에서 가져온 데이터 갯수 검증 */
+        int readCount = (int)personRepository.count();
+        assertEquals(100, readCount);
+    }
+
+    @Test
+    public void test_allow_not_duplicate() throws Exception {
+        //given
+        /** 테스트 job parameter 생성 */
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("allow_duplicate", "false")
+                .toJobParameters();
+        //when
+        /** jobLauncherTestUtils를 이용한 Job 실행  */
+        JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
+
+        //then
+        /** N개의 StepExecution을 모두 가져와서 StepExcution에 의해 Write된 총 갯수를 검증  */
+        int writeCount = jobExecution.getStepExecutions().stream().mapToInt(StepExecution::getWriteCount).sum();
+        assertEquals(22, writeCount);
+
+        /** DB에서 가져온 데이터 갯수 검증 */
+        int readCount = (int)personRepository.count();
+        assertEquals(22, readCount);
+    }
+
+
+    /** Step 테스트 */
+    @Test
+    public void test_step() {
+        /** step에서도 job parameter 넘길 수 있음 - launchStep(String stepName, JobParameters jobParameters)*/
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep("savePersonStep");
+        
+        /** N개의 StepExecution을 모두 가져와서 StepExcution에 의해 Write된 총 갯수를 검증  */
+        int writeCount = jobExecution.getStepExecutions().stream().mapToInt(StepExecution::getWriteCount).sum();
+        assertEquals(100, writeCount);
+
+        /** DB에서 가져온 데이터 갯수 검증 */
+        int readCount = (int)personRepository.count();
+        assertEquals(100, readCount);
+    }
+}
+```
