@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public enum Level {
     VIP(5000000, null),
-    GOLD(4000000, VIP),
+    GOLD(5000000, VIP),
     SILVER(300000, GOLD), 
     NORMAL(200000, SILVER);
 
@@ -49,6 +49,6 @@ public enum Level {
         if (totalAmount >= Level.NORMAL.nextAmount) {
             return NORMAL.nextLevel;
         }
-        return null;
+        return NORMAL;
     }
 }

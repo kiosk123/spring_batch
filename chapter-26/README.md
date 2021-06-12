@@ -56,7 +56,7 @@ public enum Level {
         if (totalAmount >= Level.NORMAL.nextAmount) {
             return NORMAL.nextLevel;
         }
-        return null;
+        return NORMAL;
     }
 }
 
