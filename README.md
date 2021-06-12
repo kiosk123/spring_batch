@@ -77,4 +77,4 @@ test {
 23. StepListener의 이해  
 24. Skip 예외 처리  
 25. Retry 예외 처리  
-
+26. 회원등급 프로젝트
