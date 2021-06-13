@@ -134,7 +134,7 @@ public class ParalleUserConfiguration {
     /** userLevelUpFlow, orderStatisticsFlow를 병렬로 처리하는 splitFlow */
     @Bean(JOB_NAME + "_splitFlow")
     @JobScope
-    public Flow splitFlow(@Value("#{jobParameters[date]}") String date) throws Exception {
+    public Flow splitFlow(@Value("#{jobParameters[date]?: '2021-03'}") String date) throws Exception {
         Flow userLevelUpFlow = new FlowBuilder<SimpleFlow>(JOB_NAME + "_userLevelUpFlow")
                             /** 마스터 스텝 설정 */
                             .start(userLevelUpManagerStep())
@@ -159,7 +159,7 @@ public class ParalleUserConfiguration {
                 .build();
     }
 
-    public Step orderStatisticsStep(@Value("#{jobParameters[date]?: '2020-03'}") String date) throws Exception  {
+    public Step orderStatisticsStep(String date) throws Exception  {
         log.debug("<<<<<<<<<<<<<<<< date : {} >>>>>>>>>>>>>>>>>" , date);
         return this.stepBuilderFactory.get(JOB_NAME + "_orderStatisticsStep")
                 .<OrderStatistics, OrderStatistics>chunk(1000)
@@ -238,7 +238,7 @@ public class ParalleUserConfiguration {
      * 
      * @StepScope는 프록시로 실행시키기 때문에 정확히 어떤 클래스로 리턴되는지 정확히 명신되어야한다.
      */
-    @Bean(JOB_NAME + "_itemReader")
+    @Bean(JOB_NAME + "_userItemReader")
     @StepScope
     JpaPagingItemReader<? extends User> itemReader(@Value("#{stepExecutionContext[minId]}")Long minId, 
                                           @Value("#{stepExecutionContext[maxId]}")Long maxId) throws Exception {
