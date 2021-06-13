@@ -77,5 +77,10 @@ test {
 23. StepListener의 이해  
 24. Skip 예외 처리  
 25. Retry 예외 처리  
-26. 회원등급 프로젝트
-27. 주문 금액 집계 프로젝트
+26. 회원등급 프로젝트  
+27. 주문 금액 집계 프로젝트  
+28. 성능 개선 계획 이해  
+29. Async Step 적용하기  
+30. Multi-Thread Step 적용하기  
+31. Partition Step 적용하기  
+32. Parallel Step 적용하기
