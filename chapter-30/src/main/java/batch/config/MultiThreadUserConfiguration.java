@@ -1,66 +1,51 @@
-# 31. Partition Step 적용하기
+package batch.config;
 
-![.](./img/1.png)
 
-## 예제코드
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
-PartitionStep을 만들기 위한 PartitionListener 인터페이스를 구현한다.
-```java
-@Slf4j
-public class UserLevelUpPartitioner implements Partitioner {
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
-    private final UserRepository userRepository;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JdbcPagingItemReader;
+import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.batch.item.database.Order;
+import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
+import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
+import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.TaskExecutor;
 
-	public UserLevelUpPartitioner(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+import batch.config.classes.JobParametersDecide;
+import batch.config.classes.LevelUpJobExecutionListener;
+import batch.config.classes.OrderStatistics;
+import batch.config.classes.SaveUserTasklet;
+import batch.config.classes.User;
+import batch.config.classes.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 
-    /**
-     * @param gridSize 슬레이브 스텝의 사이즈
-     */
-	@Override
-	public Map<String, ExecutionContext> partition(int gridSize) {
-        long minId = userRepository.findMinId(); // 1
-        long maxId = userRepository.findMaxId(); // 400000
-
-        long targetSize = (maxId - minId) / gridSize + 1; //5000
-
-        /**
-         * partition0 : 1, 5000
-         * partition1 : 5001, 5000
-         * //..
-         * partitionN : 35001, 40000
-         */
-        Map<String, ExecutionContext> result = new HashMap<>();
-        long number = 0;
-        long start = minId;
-        long end = start + targetSize - 1;
-
-        while (start <= maxId) {
-            ExecutionContext value = new ExecutionContext();
-            result.put("partition" + number, value);
-            if (end >= maxId) {
-                end = maxId;
-            }
-            value.putLong("minId", start);
-            value.putLong("maxId", end);
-            start += targetSize;
-            end += targetSize;
-            number++;
-        }
-		return result;
-	}
-    
-}
-```
-
-파티션 Step 기준을 설정하였으면 적용한다.
-
-```java
 @Configuration
 @Slf4j
-public class PartitionStepUserConfiguration {
-    private final static String JOB_NAME = "partitionUserJob";
+public class MultiThreadUserConfiguration {
+    private final static String JOB_NAME = "userJob";
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final UserRepository userRepository;
@@ -68,7 +53,7 @@ public class PartitionStepUserConfiguration {
     private final DataSource dataSource;
     private final TaskExecutor taskExecutor;
 
-    public PartitionStepUserConfiguration(JobBuilderFactory jobBuilderFactory,
+    public MultiThreadUserConfiguration(JobBuilderFactory jobBuilderFactory,
                               StepBuilderFactory stepBuilderFactory,
                               UserRepository userRepository,
                               EntityManagerFactory entityManagerFactory,
@@ -87,10 +72,7 @@ public class PartitionStepUserConfiguration {
         return this.jobBuilderFactory.get(JOB_NAME)
                 .incrementer(new RunIdIncrementer())
                 .start(this.saveUserStep())
-
-                /** Slave Step 대신 Mester Step을 Job에 설정 */
-                .next(this.userLevelUpManagerStep())
-                //.next(this.userLevelUpStep())
+                .next(this.userLevelUpStep())
                 .listener(new LevelUpJobExecutionListener(userRepository))
 
                 /** 다음 스템 실행전에 jobParameter date key값이 있는 지 조사 */
@@ -176,68 +158,26 @@ public class PartitionStepUserConfiguration {
                 .build();
     }
 
-    /** Slave Step */
-    @Bean(JOB_NAME + "_userLevelUpStep")
+    @Bean
     public Step userLevelUpStep() throws Exception {
         return this.stepBuilderFactory.get(JOB_NAME + "_userLevelUpStep")
                 .<User, User>chunk(100)
-                .reader(itemReader(null, null))
+                .reader(itemReader())
                 .processor(itemProcessor())
                 .writer(itemWriter())
+                /** 멀티 쓰레드 스텝 처리를 위한 taskExecutor 설정 */
+                .taskExecutor(this.taskExecutor)
+                
+                /** 몇개의 쓰레드로 chunk를 처리할 것인지에 대한 설정 */
+                .throttleLimit(8)
                 .build();
     }
 
-
-    /**
-     * Master Step
-     */
-    @Bean(JOB_NAME + "_userLevelUpStep.manager")
-    public Step userLevelUpManagerStep() throws Exception {
-        return this.stepBuilderFactory.get(JOB_NAME + "_userLevelUpStep.manager")
-
-                    /** Partitioner 구현체 설정*/
-                    .partitioner(JOB_NAME + "_userLevelUpStep", new UserLevelUpPartitioner(userRepository))
-
-                    /** Slave Step 설정 */
-                    .step(userLevelUpStep())
-                    .partitionHandler(taskExecutorPartitionHandler())
-                    .build();
-    }
-
-    @Bean
-    PartitionHandler taskExecutorPartitionHandler() throws Exception {
-        TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
-        /** Slave Step 설정 */
-        handler.setStep(userLevelUpStep());
-
-        /** taskExecutor 설정 */
-        handler.setTaskExecutor(this.taskExecutor);
-
-        /** Partitioner에서 사용될 gridSize */
-        handler.setGridSize(8);
-		return handler;
-	}
-
-	/** 
-     * Slave Step에서 사용될 ItemReader
-     * ItemReader를 빈으로 설정 후 @StepScope로 설정한다. 
-     * UserLevelUpPartitioner에서 생성한 Step에 ExecutionContext를 ItemReader를 사용하기 위해서 설정
-     * 
-     * @StepScope는 프록시로 실행시키기 때문에 정확히 어떤 클래스로 리턴되는지 정확히 명신되어야한다.
-     */
-    @Bean
-    @StepScope
-    JpaPagingItemReader<? extends User> itemReader(@Value("#{stepExecutionContext[minId]}")Long minId, 
-                                          @Value("#{stepExecutionContext[maxId]}")Long maxId) throws Exception {
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("minId", minId);
-        parameters.put("maxId", maxId);
-
+    /**Jpa Paging ItemReader를 사용함 */
+    private ItemReader<? extends User> itemReader() throws Exception {
         JpaPagingItemReader<User> itemReader = new JpaPagingItemReaderBuilder<User>()
-                .queryString("select u from User u where u.id between :minId and :maxId")
+                .queryString("select u from User u")
                 .entityManagerFactory(entityManagerFactory)
-                .parameterValues(parameters)
                 .pageSize(100)
 
                 /** name 설정 해야됨 */
@@ -266,4 +206,3 @@ public class PartitionStepUserConfiguration {
         };
     }
 }
-```

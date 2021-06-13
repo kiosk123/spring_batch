@@ -1,62 +1,51 @@
-# 31. Partition Step 적용하기
+package batch.config;
 
-![.](./img/1.png)
 
-## 예제코드
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
-PartitionStep을 만들기 위한 PartitionListener 인터페이스를 구현한다.
-```java
-@Slf4j
-public class UserLevelUpPartitioner implements Partitioner {
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
-    private final UserRepository userRepository;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.partition.PartitionHandler;
+import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JdbcPagingItemReader;
+import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.batch.item.database.Order;
+import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
+import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
+import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.TaskExecutor;
 
-	public UserLevelUpPartitioner(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+import batch.config.classes.JobParametersDecide;
+import batch.config.classes.LevelUpJobExecutionListener;
+import batch.config.classes.OrderStatistics;
+import batch.config.classes.SaveUserTasklet;
+import batch.config.classes.User;
+import batch.config.classes.UserLevelUpPartitioner;
+import batch.config.classes.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 
-    /**
-     * @param gridSize 슬레이브 스텝의 사이즈
-     */
-	@Override
-	public Map<String, ExecutionContext> partition(int gridSize) {
-        long minId = userRepository.findMinId(); // 1
-        long maxId = userRepository.findMaxId(); // 400000
-
-        long targetSize = (maxId - minId) / gridSize + 1; //5000
-
-        /**
-         * partition0 : 1, 5000
-         * partition1 : 5001, 5000
-         * //..
-         * partitionN : 35001, 40000
-         */
-        Map<String, ExecutionContext> result = new HashMap<>();
-        long number = 0;
-        long start = minId;
-        long end = start + targetSize - 1;
-
-        while (start <= maxId) {
-            ExecutionContext value = new ExecutionContext();
-            result.put("partition" + number, value);
-            if (end >= maxId) {
-                end = maxId;
-            }
-            value.putLong("minId", start);
-            value.putLong("maxId", end);
-            start += targetSize;
-            end += targetSize;
-            number++;
-        }
-		return result;
-	}
-    
-}
-```
-
-파티션 Step 기준을 설정하였으면 적용한다.
-
-```java
 @Configuration
 @Slf4j
 public class PartitionStepUserConfiguration {
@@ -266,4 +255,3 @@ public class PartitionStepUserConfiguration {
         };
     }
 }
-```

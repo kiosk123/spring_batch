@@ -9,6 +9,27 @@
             "name": "Launch BatchApplication",
             "request": "launch",
             "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-31"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-30"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
+            "projectName": "chapter-29"
+        },
+        {
+            "type": "java",
+            "name": "Launch BatchApplication",
+            "request": "launch",
+            "mainClass": "batch.BatchApplication",
             "projectName": "chapter-27",
             "args": "date=2021-03"
         }
