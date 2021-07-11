@@ -84,3 +84,4 @@ test {
 30. Multi-Thread Step 적용하기  
 31. Partition Step 적용하기  
 32. Parallel Step 적용하기
+33. Jar 파일로 만들고 실행하기
