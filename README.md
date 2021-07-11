@@ -85,3 +85,4 @@ test {
 31. Partition Step 적용하기  
 32. Parallel Step 적용하기
 33. Jar 파일로 만들고 실행하기
+34. Jenkins를 활용하여 배치 실행하기
