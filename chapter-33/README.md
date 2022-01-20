@@ -84,5 +84,6 @@ $ ./gradlew clean jar build -x test # jar로 빌드는 하지만 테스트는 �
 $ cd build
 $ cd libs
 # job.name 파라미터는은 --가 두개 붙는다
-$ java -jar chapter-33-0.0.1-SNAPSHOT.jar --job.name=user.job -date=2020-11 -path=/c/Users/HeoJongTae/Desktop/spring_batch/chapter-33/
+# jobParameter는 -가 하나 붙는다
+$ java -jar chapter-33-0.0.1-SNAPSHOT.jar --job.name=userJob -date=2020-11 -path=/c/Users/HeoJongTae/Desktop/spring_batch/chapter-33/
 ```
