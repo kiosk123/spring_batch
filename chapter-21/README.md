@@ -3,7 +3,7 @@
 ![.](./img/1.png)
 
 JobLauncherTestUtils 클래스는 JobLauncher를 이용해서 테스트를 가능하게 끔 만들게 하는 클래스  
-JobLauncherTestUtils 클래스는 내부적으로 JobLauncher를 포함하고 있고, 테스트 코드에서 Jobr과 Step을 자유롭게 실행할 수 있다.  
+JobLauncherTestUtils 클래스는 내부적으로 JobLauncher를 포함하고 있고, 테스트 코드에서 Job과 Step을 자유롭게 실행할 수 있다.  
   
   
 테스트 코드에서 **@EnableAutoConfiguration**을 사용하는데 이것에 관련된 내용을 다음과 같다
