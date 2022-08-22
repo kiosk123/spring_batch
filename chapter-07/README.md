@@ -32,7 +32,7 @@ public class  ChunkProcessingConfiguration {
     @Bean
     public Step chunkBaseStep() {
         return stepBuilderFactory.get("chunkBaseStep")
-                /** 100개의 데이터가 있을 경우 chunk(10)으로 하면 chunk한 덩어리아 데이터를 10개씩 나눈다는 의미 */
+                /** 100개의 데이터가 있을 경우 chunk(10)으로 하면 chunk한 덩어리당 데이터를 10개씩 나눈다는 의미 */
                 .<String, String>chunk(10)
                 .reader(itemReader())
                 .processor(itemProcessor())
