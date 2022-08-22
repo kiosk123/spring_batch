@@ -41,7 +41,7 @@ public class  ChunkProcessingConfiguration {
     }
     
     private ItemReader<? extends String> itemReader() {
-        /** 리스트를 이용하셔 ListItemReader 초기화 */
+        /** 리스트를 이용하여 ListItemReader 초기화 */
         return new ListItemReader<>(getItems());
     }
 
