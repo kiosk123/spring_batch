@@ -60,7 +60,7 @@ public class  ChunkProcessingConfiguration {
 
     /** tasklet 스텝 */
     @Bean
-    @StepScope
+    @JobScope
     public Step taskBaseStep(@Value("#{jobParameters[chunkSize]}") String value) {
         return stepBuilderFactory.get("taskBaseStep")
                 .tasklet(this.tasklet(value))
